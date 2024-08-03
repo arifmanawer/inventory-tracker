@@ -1,8 +1,24 @@
-import { Box, Button, Typography } from '@mui/material'
-import Link from 'next/link'
-import React from 'react'
+'use client'
 
+import { Box, Button, Typography } from '@mui/material'
+import React from 'react'
+import { signInWithPopup, auth, provider} from '@/firebase'
+import { useRouter } from 'next/navigation'
 const page = () => {
+
+  const router = useRouter();
+
+  const handleLogin = async () => {
+    try {
+      const res = await signInWithPopup(auth, provider);
+      console.log(res.user);
+      router.push('/inventory');
+    } catch (e){
+      console.error(e);
+    }
+  } 
+
+
   return (
     <Box
       width="100vw"
@@ -15,9 +31,7 @@ const page = () => {
       bgcolor="#921A40"
       >
       <Typography variant='h3' color={"white"}>Inventory Tracker</Typography>
-      <Link href="/inventory">
-        <Button variant="contained" color="primary">Log In</Button>
-      </Link>
+        <Button variant="contained" color="primary" onClick={handleLogin}>Log In</Button>
     </Box>
   )
 }

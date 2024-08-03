@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react'
 import { Box, Button, Modal , Stack, TextField, Typography } from '@mui/material'
 import { firestore } from '@/firebase';
 import { collection, getDocs, query, setDoc, doc, getDoc, deleteDoc } from 'firebase/firestore';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { signOut, auth, onAuthStateChanged } from '@/firebase';
 
 const style = {
   transform: 'translate(-50%, -50%)',
@@ -37,6 +38,28 @@ const textfieldCustom = {
 
 
 export default function page() {
+  const router = useRouter();
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      router.push('/');
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push('/'); // Redirect to login page if not logged in
+      } else {
+        getInventory(); // Fetch inventory if logged in
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
+  
   const [inventory, setInventory] = useState([]);
   const [open, setOpen] = useState(false);
   const [item, setItem] = useState('');
@@ -242,7 +265,7 @@ export default function page() {
           </Box>
         ))}
       </Box>
-      <Link href="/"><Button variant='contained' color='primary'><Box>Log Out</Box></Button></Link>
+      <Button variant='contained' color='primary' onClick={handleSignOut}><Box>Log Out</Box></Button>
       
     </Box>
   );
