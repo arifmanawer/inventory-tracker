@@ -35,7 +35,7 @@ const textfieldCustom = {
   color: 'white',
 };
 
-export default function page() {
+export default function Page() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [inventory, setInventory] = useState([]);
