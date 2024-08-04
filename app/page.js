@@ -5,7 +5,7 @@ import React from 'react'
 import { signInWithPopup, auth, provider} from '@/app/firebase/firebase'
 import { useRouter } from 'next/navigation'
 
-const page = () => {
+const Page = () => {
 
   const router = useRouter();
 
