@@ -1,10 +1,9 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { Box, Button, Modal , Stack, TextField, Typography } from '@mui/material'
-import { firestore } from '@/firebase';
 import { collection, getDocs, query, setDoc, doc, getDoc, deleteDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { signOut, auth, onAuthStateChanged } from '@/firebase';
+import { firestore, signOut, auth, onAuthStateChanged } from '@/app/firebase/firebase';
 
 const style = {
   transform: 'translate(-50%, -50%)',
