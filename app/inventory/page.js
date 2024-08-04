@@ -55,10 +55,10 @@ export default function Page() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
-        router.push('/'); // Redirect to login page if not logged in
+        router.push('/');
       } else {
         setUser(user);
-        getInventory(user.uid); // Fetch inventory if logged in
+        getInventory(user.uid);
       }
     });
 
