@@ -35,9 +35,14 @@ const textfieldCustom = {
   color: 'white',
 };
 
-
 export default function page() {
   const router = useRouter();
+  const [user, setUser] = useState(null);
+  const [inventory, setInventory] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [item, setItem] = useState('');
+  const [filter, setFilter] = useState('');
+
   const handleSignOut = async () => {
     try {
       await signOut(auth);
@@ -45,27 +50,23 @@ export default function page() {
     } catch (e) {
       console.error(e);
     }
-  }
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         router.push('/'); // Redirect to login page if not logged in
       } else {
-        getInventory(); // Fetch inventory if logged in
+        setUser(user);
+        getInventory(user.uid); // Fetch inventory if logged in
       }
     });
 
     return () => unsubscribe();
   }, [router]);
 
-  
-  const [inventory, setInventory] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [item, setItem] = useState('');
-  const [filter, setFilter] = useState('');
-
-  const getInventory = async () => {
-    const snapshot = query(collection(firestore, 'inventory'));
+  const getInventory = async (uid) => {
+    const snapshot = query(collection(firestore, 'users', uid, 'inventory'));
     const docs = await getDocs(snapshot);
     const inventoryList = [];
     docs.forEach((doc) => {
@@ -77,8 +78,8 @@ export default function page() {
     setInventory(inventoryList);
   };
 
-  const addItem = async (item) => {
-    const docRef = doc(firestore, 'inventory', item);
+  const addItem = async (uid, item) => {
+    const docRef = doc(firestore, 'users', uid, 'inventory', item);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       const { quantity } = docSnap.data();
@@ -88,11 +89,11 @@ export default function page() {
     } else {
       await setDoc(docRef, { quantity: 1 });
     }
-    getInventory();
+    getInventory(uid);
   };
 
-  const removeItem = async (item) => {
-    const docRef = doc(firestore, 'inventory', item);
+  const removeItem = async (uid, item) => {
+    const docRef = doc(firestore, 'users', uid, 'inventory', item);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       const { quantity } = docSnap.data();
@@ -104,12 +105,14 @@ export default function page() {
         });
       }
     }
-    await getInventory();
+    await getInventory(uid);
   };
 
   useEffect(() => {
-    getInventory();
-  }, []);
+    if (user) {
+      getInventory(user.uid);
+    }
+  }, [user]);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -144,13 +147,15 @@ export default function page() {
         >
           <Typography variant='h5'>Add Item</Typography>
           <Stack direction="row" width="100%" spacing={2}>
-            <TextField id="filled-basic"  variant="filled" fullWidth
+            <TextField id="filled-basic" variant="filled" fullWidth
               value={item} onChange={(e) => {
                 setItem(e.target.value);
               }}
             />
             <Button variant="outlined" color="primary" onClick={() => {
-              addItem(item);
+              if (user) {
+                addItem(user.uid, item);
+              }
               setItem('');
               handleClose();
             }}>Add</Button>
@@ -235,7 +240,7 @@ export default function page() {
               <Button 
                 variant='text'
                 sx={buttonHover}
-                onClick={() => addItem(name)}
+                onClick={() => addItem(user.uid, name)}
                 >
                 <Box
                   display='flex'
@@ -249,7 +254,7 @@ export default function page() {
               <Button 
                 variant='text'
                 sx={removeButton}
-                onClick={() => removeItem(name)}
+                onClick={() => removeItem(user.uid, name)}
                 >
                 <Box
                   display='flex'
@@ -265,7 +270,6 @@ export default function page() {
         ))}
       </Box>
       <Button variant='contained' color='primary' onClick={handleSignOut}><Box>Log Out</Box></Button>
-      
     </Box>
   );
 }
