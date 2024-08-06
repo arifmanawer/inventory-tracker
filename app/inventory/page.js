@@ -31,7 +31,7 @@ const removeButton = {
 };
 
 const textfieldCustom = {
-  width: '80%',
+  width: {base:"50%",md:'80%'},
   color: 'white',
 };
 
@@ -192,7 +192,7 @@ export default function Page() {
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />
-        <Box height="40px">
+        <Box height={{md:"40px"}}>
           <Button variant='text' sx={buttonHover} onClick={handleOpen}>
             <Typography color={"white"} variant='h6'>Add Item</Typography>
           </Button>
