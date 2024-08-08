@@ -171,7 +171,7 @@ export default function Page() {
         alignItems="center"
         borderRadius={4}
       >
-        <Typography variant='h3' color={"white"}>Inventory Tracker</Typography>
+        <Typography variant='h3' color={"white"}>Inventory</Typography>
       </Box>
       <Box
         borderRadius={6}

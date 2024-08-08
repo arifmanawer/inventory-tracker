@@ -31,7 +31,7 @@ const Page = () => {
       gap={4}
       bgcolor="#921A40"
       >
-      <Typography variant='h3' color={"white"}>Inventory Tracker</Typography>
+      <Typography variant='h3' color={"white"}>StockedUp</Typography>
         <Button variant="contained" color="primary" onClick={handleLogin}>Log In</Button>
     </Box>
   )
