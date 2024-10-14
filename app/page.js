@@ -6,7 +6,6 @@ import { signInWithPopup, auth, provider} from '@/app/firebase/firebase'
 import { useRouter } from 'next/navigation'
 
 const Page = () => {
-
   const router = useRouter();
 
   const handleLogin = async () => {
@@ -18,9 +17,8 @@ const Page = () => {
       console.error(e);
     }
   } 
-  
+
   return (
-    
     <Box
       width="100vw"
       height="100vh"
@@ -30,9 +28,9 @@ const Page = () => {
       flexDirection="column"
       gap={4}
       bgcolor="#921A40"
-      >
+    >
       <Typography variant='h3' color={"white"}>StockedUp</Typography>
-        <Button variant="contained" color="primary" onClick={handleLogin}>Log In</Button>
+      <Button variant="contained" color="primary" onClick={handleLogin}>Log In</Button>
     </Box>
   )
 }

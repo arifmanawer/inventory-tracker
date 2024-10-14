@@ -42,6 +42,9 @@ export default function Page() {
   const [open, setOpen] = useState(false);
   const [item, setItem] = useState('');
   const [filter, setFilter] = useState('');
+  const [image, setImage] = useState(null);
+  const [processing, setProcessing] = useState(false);
+
 
   const handleSignOut = async () => {
     try {
@@ -121,6 +124,39 @@ export default function Page() {
     name.toLowerCase().startsWith(filter.toLowerCase())
   );
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+  };
+
+  const handleImageUpload = async () => {
+    if (!image || !user) return;
+
+    setProcessing(true);
+    const formData = new FormData();
+    formData.append('image', image);
+    formData.append('userId', user.uid);
+
+    try {
+      const response = await fetch('/api/process-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (data.items) {
+        for (const item of data.items) {
+          await addItem(user.uid, item);
+        }
+      }
+      setImage(null);
+    } catch (error) {
+      console.error('Error processing image:', error);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   return (
     <Box
       width="100vw"
@@ -196,6 +232,30 @@ export default function Page() {
           <Button variant='text' sx={buttonHover} onClick={handleOpen}>
             <Typography color={"white"} variant='h6'>Add Item</Typography>
           </Button>
+          <input
+            accept="image/*"
+            style={{ display: 'none' }}
+            id="raised-button-file"
+            type="file"
+            onChange={handleImageChange}
+          />
+          <label htmlFor="raised-button-file">
+            <Button variant='text' sx={buttonHover} component="span">
+              <Typography color={"white"} variant='h6'>Upload Image</Typography>
+            </Button>
+          </label>
+          {image && (
+            <Button 
+              variant='text' 
+              sx={buttonHover} 
+              onClick={handleImageUpload}
+              disabled={processing}
+            >
+              <Typography color={"white"} variant='h6'>
+                {processing ? 'Processing...' : 'Process Image'}
+              </Typography>
+            </Button>
+          )}
         </Box>
       </Box>
       <Box
